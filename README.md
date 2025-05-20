@@ -1,40 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Zustand Re-renders: Otimizando Composição de Componentes
 
-## Getting Started
+Este projeto mostra, de forma prática, como o Zustand pode ser usado em três níveis de composição de componentes, com foco em performance e controle de re-renderizações no React/Next.js.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 📌 Objetivo
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Evitar re-renderizações desnecessárias causadas por mudanças no estado global usando [Zustand](https://github.com/pmndrs/zustand).
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+---
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+## 🔢 Etapas do Projeto
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+### 🟠 Passo 1 — Componente sem separação
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Tudo está em um único componente.
+- O estado do Zustand é consumido diretamente.
+- Toda a página re-renderiza ao alterar o estado.
+- **Uso direto:** `useMainStore` é usado dentro do mesmo componente que renderiza o layout e os botões.
 
-## Learn More
+**Consequência:** mesmo os elementos que não dependem do estado (ex: botões de navegação) são re-renderizados.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+### 🟡 Passo 2 — Componentes extraídos
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `FirstValue` e `AddButton` foram extraídos como componentes separados.
+- Cada um consome seu respectivo valor/função do Zustand.
+- O componente principal (`Example2`) **não consome o Zustand diretamente**.
+- Os botões de navegação também foram extraídos (`LinkToFirstExample`, `LinkToThirdExample`).
 
-## Deploy on Vercel
+**Benefício:** somente os componentes que realmente usam o estado re-renderizam.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+### 🟢 Passo 3 — Performance refinada com memo/useMemo
+
+- Componentes estáticos foram otimizados com `React.memo` (como `Example3`).
+- Blocos de código e links foram extraídos e memorizados com `useMemo`.
+- Os componentes que usam Zustand continuam isolados.
+- A estrutura garante que **nenhum outro trecho** seja afetado nas mudanças de estado.
+
+**Resultado final:** Re-renderização mínima, performance máxima e código limpo.
+
+---
+
+## 🚀 Tecnologias Usadas
+
+- [Next.js](https://nextjs.org/)
+- [Zustand](https://github.com/pmndrs/zustand)
+- [React](https://react.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+
+---
+
+## 🧠 Conclusão
+
+Componentizar apenas o que depende do estado já é suficiente para evitar re-renderizações desnecessárias. Com `memo` e `useMemo`, você consegue ainda mais controle — sem precisar "picotar" todo o layout.
+
+---
